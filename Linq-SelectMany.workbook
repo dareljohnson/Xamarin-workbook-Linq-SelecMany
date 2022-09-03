@@ -1,0 +1,138 @@
+---
+uti: com.xamarin.workbook
+id: ee239a29-adfc-4a79-8226-dd9e48815a39
+title: Linq-SelectMany
+platforms:
+- DotNetCore
+---
+
+https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable?view=net-6.0
+
+```csharp
+class PetOwner
+{
+    public string Name { get; set; }
+    public List<string> Pets { get; set; }
+}
+```
+
+```csharp
+public static void SelectManyEx3()
+{
+    PetOwner[] petOwners =
+        { new PetOwner { Name="Higa",
+              Pets = new List<string>{ "Scruffy", "Sam" } },
+          new PetOwner { Name="Ashkenazi",
+              Pets = new List<string>{ "Walker", "Sugar" } },
+          new PetOwner { Name="Price",
+              Pets = new List<string>{ "Scratches", "Diesel" } },
+          new PetOwner { Name="Hines",
+              Pets = new List<string>{ "Dusty" } } };
+
+    // Project the pet owner's name and the pet's name.
+    var query =
+        petOwners
+        .SelectMany(petOwner => petOwner.Pets, (petOwner, petName) => new { petOwner, petName })
+        .Where(ownerAndPet => ownerAndPet.petName.StartsWith("S"))
+        .Select(ownerAndPet =>
+                new
+                {
+                    Owner = ownerAndPet.petOwner.Name,
+                    Pet = ownerAndPet.petName
+                }
+        );
+
+    // Print the results.
+    foreach (var obj in query)
+    {
+        Console.WriteLine(obj);
+    }
+}
+```
+
+```csharp
+SelectManyEx3();
+```
+
+Select
+
+```csharp
+IEnumerable<int> squares =
+    Enumerable.Range(1, 10).Select(x => x * x);
+
+foreach (int num in squares)
+{
+    Console.WriteLine(num);
+}
+```
+
+Zip
+
+```csharp
+int[] numbers = { 1, 2, 3, 4 };
+string[] words = { "one", "two", "three" };
+
+var numbersAndWords = numbers.Zip(words, (first, second) => first + " " + second);
+
+foreach (var item in numbersAndWords)
+    Console.WriteLine(item);
+```
+
+ToDictionary
+
+```csharp
+class Package
+{
+    public string Company { get; set; }
+    public double Weight { get; set; }
+    public long TrackingNumber { get; set; }
+}
+```
+
+```csharp
+public static void ToDictionaryEx1()
+{
+    List<Package> packages =
+        new List<Package>
+            { new Package { Company = "Coho Vineyard", Weight = 25.2, TrackingNumber = 89453312L },
+              new Package { Company = "Lucerne Publishing", Weight = 18.7, TrackingNumber = 89112755L },
+              new Package { Company = "Wingtip Toys", Weight = 6.0, TrackingNumber = 299456122L },
+              new Package { Company = "Adventure Works", Weight = 33.8, TrackingNumber = 4665518773L } };
+
+    // Create a Dictionary of Package objects,
+    // using TrackingNumber as the key.
+    Dictionary<long, Package> dictionary =
+        packages.ToDictionary(p => p.TrackingNumber);
+
+    foreach (KeyValuePair<long, Package> kvp in dictionary)
+    {
+        Console.WriteLine(
+            "Key {0}: {1}, {2} pounds",
+            kvp.Key,
+            kvp.Value.Company,
+            kvp.Value.Weight);
+    }
+}
+```
+
+```csharp
+ToDictionaryEx1();
+```
+
+Aggregate
+
+```csharp
+string[] fruits = { "apple", "mango", "orange", "passionfruit", "grape" };
+
+// Determine whether any string in the array is longer than "banana".
+string longestName =
+    fruits.Aggregate("banana",
+                    (longest, next) =>
+                        next.Length > longest.Length ? next : longest,
+    // Return the final result as an upper case string.
+                    fruit => fruit.ToUpper());
+
+Console.WriteLine(
+    "The fruit with the longest name is {0}.",
+    longestName);
+```
